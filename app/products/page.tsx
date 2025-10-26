@@ -2,13 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-
-import { Button, Input, Space, theme } from "antd";
-import { debounce, set } from "lodash";
+import { Button, Input, Space, theme, message, Alert } from "antd";
+import { debounce } from "lodash";
 
 import ProductTable from "@/components/products/ProductTable";
 import CreateProductModal from "@/components/products/CreateProductModal";
-import type { Product } from "@/types/product";
 import { useGetAllProducts } from "@/hooks/products/useProducts";
 
 const SearchOutlined = dynamic(
@@ -30,7 +28,6 @@ const ProductPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalData, setTotalData] = useState(0);
-
   const [openCreate, setOpenCreate] = useState(false);
 
   const {
@@ -38,6 +35,7 @@ const ProductPage = () => {
     isLoading: productLoading,
     error: productError,
     isSuccess: productSuccess,
+    refetch: refetchProduct,
   } = useGetAllProducts({
     limit: pageSize,
     offset: offsetPage,
@@ -45,12 +43,19 @@ const ProductPage = () => {
     search: search,
   });
 
+  // Handle error notification
+  useEffect(() => {
+    if (productError) {
+      console.error("Product fetch error:", productError);
+      message.error("Failed to fetch product data. Please try again later.");
+    }
+  }, [productError]);
+
+  // Update total data when fetch succeeds
   useEffect(() => {
     const { total } = productData?.pagination || {};
     setTotalData(total || 0);
-  }, [productSuccess]);
-
-  console.log("productData", productData);
+  }, [productSuccess, productData]);
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -65,10 +70,6 @@ const ProductPage = () => {
       }, 300),
     []
   );
-
-  const handleCreateProduct = (product: Product) => {
-    console.log("Created product:", product);
-  };
 
   return (
     <div className="p-6">
@@ -95,10 +96,27 @@ const ProductPage = () => {
             backgroundColor: colorPrimary,
           }}
         >
-          <span className="hidden md:inline">Create</span>Product
+          <span className="hidden md:inline">Create</span> Product
         </Button>
       </Space>
 
+      {/* Error state */}
+      {productError && (
+        <Alert
+          message="Error"
+          description="Unable to load products. Please refresh the page or try again later."
+          type="error"
+          showIcon
+          className="mb-4"
+          action={
+            <Button onClick={() => refetchProduct()} size="small">
+              Retry
+            </Button>
+          }
+        />
+      )}
+
+      {/* Product Table */}
       <div className="overflow-x-auto">
         <ProductTable
           data={productData?.data || []}
@@ -112,6 +130,7 @@ const ProductPage = () => {
         />
       </div>
 
+      {/* Create Modal */}
       <CreateProductModal
         open={openCreate}
         onCancel={() => setOpenCreate(false)}

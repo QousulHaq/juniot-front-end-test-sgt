@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Table, Button, Space } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import {EditOutlined, DeleteOutlined} from "@ant-design/icons"
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import EditProductModal from "@/components/products/EditProductModal";
 import ConfirmDeleteModal from "@/components/products/ConfirmDeleteModal";
@@ -31,20 +31,17 @@ const ProductTable: React.FC<Props> = ({
   onPageSizeChange,
   onDelete,
 }) => {
-  const [selectedEditProduct, setSelectedEditProduct] = useState<string | null>(
-    null
-  );
-  const [selectedDeleteProduct, setSelectedDeleteProduct] = useState<string | null>(
-    null
-  );
-  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [selectedEditProduct, setSelectedEditProduct] =useState<Product | null>(null);
+  const [selectedDeleteProduct, setSelectedDeleteProduct] = useState<Product | null>(null);
 
-  const handleEditProduct = (product: Product) => {
-    console.log("Edited product:", product);
+  const handleSelectEditProduct = (id: string) => {
+    const [selectedData] = data.filter((row) => row.product_id === id);
+    setSelectedEditProduct(selectedData);
   };
 
-  const handleDeleteProduct = () => {
-    console.log("Edited product:");
+  const handleSelectDeleteProduct = (id: string) => {
+    const [selectedData] = data.filter((row) => row.product_id === id);
+    setSelectedDeleteProduct(selectedData);
   };
 
   const columns: ColumnsType<Product> = [
@@ -81,11 +78,18 @@ const ProductTable: React.FC<Props> = ({
       align: "center",
       render: (_, record) => (
         <Space>
-          <Button type="link" onClick={() => setSelectedEditProduct(record.product_id)}>
-            <EditOutlined style={{fontSize:"1.25rem"}}/>
+          <Button
+            type="link"
+            onClick={() => handleSelectEditProduct(record.product_id)}
+          >
+            <EditOutlined style={{ fontSize: "1.25rem" }} />
           </Button>
-          <Button type="link" danger onClick={() => setSelectedDeleteProduct(record.product_id)}>
-            <DeleteOutlined style={{fontSize:"1.25rem"}}/>
+          <Button
+            type="link"
+            danger
+            onClick={() => handleSelectDeleteProduct(record.product_id)}
+          >
+            <DeleteOutlined style={{ fontSize: "1.25rem" }} />
           </Button>
         </Space>
       ),
@@ -113,17 +117,15 @@ const ProductTable: React.FC<Props> = ({
           }}
         />
       </div>
+
       <EditProductModal
-        openedId={selectedEditProduct}
+        openedProduct={selectedEditProduct}
         onCancel={() => setSelectedEditProduct(null)}
-        onCreate={handleEditProduct}
       />
-       <ConfirmDeleteModal
-        openedId={selectedDeleteProduct}
+
+      <ConfirmDeleteModal
+        openedProduct={selectedDeleteProduct}
         onCancel={() => setSelectedDeleteProduct(null)}
-        onConfirm={handleDeleteProduct}
-        loading={loadingDelete}
-        productName={ data.find(p => p.product_id === selectedDeleteProduct)?.product_title }
       />
     </>
   );

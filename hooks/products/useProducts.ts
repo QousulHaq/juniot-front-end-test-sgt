@@ -1,4 +1,4 @@
-import api from "@/utils/axiosInstance";
+import api from "@/lib/axiosInstance";
 import { useQuery } from "@tanstack/react-query";
 
 import type { GetRequestPayload, Product } from "@/types/product";
