@@ -1,21 +1,13 @@
 import { Modal, Form, Input, InputNumber, Select } from "antd";
 import { useState } from "react";
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  category: string;
-  description: string;
-}
+import type { Product } from "@/types/product";
 
 interface Props {
   open: boolean;
   onCancel: () => void;
-  onCreate: (product: Product) => void;
 }
 
-const CreateProductModal: React.FC<Props> = ({ open, onCancel, onCreate }) => {
+const CreateProductModal: React.FC<Props> = ({ open, onCancel }) => {
   const [form] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -23,16 +15,7 @@ const CreateProductModal: React.FC<Props> = ({ open, onCancel, onCreate }) => {
     form
       .validateFields()
       .then((values) => {
-        setConfirmLoading(true);
-        const newProduct: Product = {
-          id: Math.floor(Math.random() * 10000),
-          ...values,
-        };
-        setTimeout(() => {
-          onCreate(newProduct);
-          setConfirmLoading(false);
-          form.resetFields();
-        }, 800);
+        console.log("Created product:", values);
       })
       .catch(() => {});
   };

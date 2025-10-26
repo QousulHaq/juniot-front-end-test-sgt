@@ -6,7 +6,7 @@ import { Modal, Typography } from "antd";
 const { Text } = Typography;
 
 interface ConfirmDeleteModalProps {
-  openedId: number | null;
+  openedId: string | null;
   onCancel: () => void;
   onConfirm: () => void;
   productName?: string;

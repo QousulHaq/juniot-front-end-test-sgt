@@ -3,7 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Navbar from "@/components/Navbar";
-import AntdProvider from "@/components/AntdProvider";
+import AntdProvider from "@/components/provider/AntdProvider";
+import ReactQueryProvider from "@/components/provider/ReactQueryProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,12 +32,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-neutral-950 transition-colors duration-300`}
       >
-        <Navbar />
-        <main className="main-container p-6 text-gray-900 dark:text-gray-100">
-          <AntdProvider>
-            <AntdRegistry>{children}</AntdRegistry>
-          </AntdProvider>
-        </main>
+        <ReactQueryProvider>
+          <Navbar />
+          <main className="main-container p-6 text-gray-900 dark:text-gray-100">
+            <AntdProvider>
+              <AntdRegistry>{children}</AntdRegistry>
+            </AntdProvider>
+          </main>
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useTheme } from "./useTheme"
+import { useTheme } from "../hooks/useTheme"
 import { Moon, Sun } from "lucide-react"
 
 const Navbar = () => {

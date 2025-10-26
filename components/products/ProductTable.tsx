@@ -1,29 +1,24 @@
 "use client";
 
 import { useState } from "react";
+
 import { Table, Button, Space } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { EditIcon, TrashIcon } from "lucide-react";
 import {EditOutlined, DeleteOutlined} from "@ant-design/icons"
-import EditProductModal from "./EditProductModal";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  category: string;
-  description: string;
-}
+import EditProductModal from "@/components/products/EditProductModal";
+import ConfirmDeleteModal from "@/components/products/ConfirmDeleteModal";
+import type { Product } from "@/types/product";
 
 interface Props {
   data: Product[];
   loading: boolean;
   currentPage: number;
   pageSize: number;
+  totalData: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 const ProductTable: React.FC<Props> = ({
@@ -31,14 +26,15 @@ const ProductTable: React.FC<Props> = ({
   loading,
   currentPage,
   pageSize,
+  totalData,
   onPageChange,
   onPageSizeChange,
   onDelete,
 }) => {
-  const [selectedEditProduct, setSelectedEditProduct] = useState<number | null>(
+  const [selectedEditProduct, setSelectedEditProduct] = useState<string | null>(
     null
   );
-  const [selectedDeleteProduct, setSelectedDeleteProduct] = useState<number | null>(
+  const [selectedDeleteProduct, setSelectedDeleteProduct] = useState<string | null>(
     null
   );
   const [loadingDelete, setLoadingDelete] = useState(false);
@@ -54,27 +50,27 @@ const ProductTable: React.FC<Props> = ({
   const columns: ColumnsType<Product> = [
     {
       title: "Product Title",
-      dataIndex: "title",
-      key: "title",
+      dataIndex: "product_title",
+      key: "product_title",
       align: "center",
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "product_price",
+      key: "product_price",
       align: "center",
       render: (price: number) => `Rp ${price.toLocaleString("id-ID")}`,
     },
     {
       title: "Category",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "product_category",
+      key: "product_category",
       align: "center",
     },
     {
       title: "Description",
-      dataIndex: "description",
-      key: "description",
+      dataIndex: "product_description",
+      key: "product_description",
       align: "center",
       render: (text: string) =>
         text.length > 40 ? `${text.substring(0, 40)}...` : text,
@@ -85,10 +81,10 @@ const ProductTable: React.FC<Props> = ({
       align: "center",
       render: (_, record) => (
         <Space>
-          <Button type="link" onClick={() => setSelectedEditProduct(record.id)}>
+          <Button type="link" onClick={() => setSelectedEditProduct(record.product_id)}>
             <EditOutlined style={{fontSize:"1.25rem"}}/>
           </Button>
-          <Button type="link" danger onClick={() => setSelectedDeleteProduct(record.id)}>
+          <Button type="link" danger onClick={() => setSelectedDeleteProduct(record.product_id)}>
             <DeleteOutlined style={{fontSize:"1.25rem"}}/>
           </Button>
         </Space>
@@ -107,7 +103,7 @@ const ProductTable: React.FC<Props> = ({
           pagination={{
             current: currentPage,
             pageSize,
-            total: data.length,
+            total: totalData,
             onChange: (page, size) => {
               onPageChange(page);
               onPageSizeChange(size || 5);
@@ -127,7 +123,7 @@ const ProductTable: React.FC<Props> = ({
         onCancel={() => setSelectedDeleteProduct(null)}
         onConfirm={handleDeleteProduct}
         loading={loadingDelete}
-        productName={ data.find(p => p.id === selectedDeleteProduct)?.title }
+        productName={ data.find(p => p.product_id === selectedDeleteProduct)?.product_title }
       />
     </>
   );

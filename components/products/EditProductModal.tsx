@@ -1,16 +1,9 @@
 import { Modal, Form, Input, InputNumber, Select } from "antd";
 import { useState } from "react";
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  category: string;
-  description: string;
-}
+import type { Product } from "@/types/product";
 
 interface Props {
-  openedId: number | null;
+  openedId: string | null;
   onCancel: () => void;
   onCreate: (product: Product) => void;
 }
