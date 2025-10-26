@@ -38,7 +38,8 @@ const LoginPage: React.FC = () => {
       console.log("Firebase Token:", token);
 
       message.success("Login berhasil!");
-      router.push("/products"); // ganti ke halaman utama kamu
+      // router.push("/products"); // ganti ke halaman utama kamu
+      window.location.href = "/products"
     } catch (error: any) {
       console.error("Firebase Login error:", error);
       message.error(
