@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+import { getFirebaseToken } from "@/lib/getFirebaseToken";
+import api from "@/lib/axiosInstance";
 
 // Helper: bikin response format mirip responseBuilder
 function buildResponse(success: boolean, status: number, data?: any, pagination?: any, message?: string) {
@@ -18,6 +19,8 @@ function buildResponse(success: boolean, status: number, data?: any, pagination?
 // GET /api/products
 export async function GET(req: NextRequest) {
     try {
+        const token = getFirebaseToken(req)
+
         const { searchParams } = new URL(req.url);
         const limit = parseInt(searchParams.get("limit") || "10");
         const page = parseInt(searchParams.get("page") || "1");
@@ -26,8 +29,11 @@ export async function GET(req: NextRequest) {
         const offset = (page - 1) * limit;
 
         // Panggil backend API (ganti URL dengan API-mu)
-        const backendRes = await axios.get(`${process.env.BACKEND_URL}/products`, {
+        const backendRes = await api.get(`${process.env.BACKEND_URL}/products`, {
             params: { limit, offset, search },
+            headers: {
+                Authorization: token
+            }
         });
 
         return NextResponse.json(backendRes.data);
