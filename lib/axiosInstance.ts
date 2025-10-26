@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
+import { auth } from "./firebaseClient";
 
 /**
  * Axios instance utama untuk API backend.
@@ -16,23 +17,30 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: false, // ubah ke true kalau backend pakai cookie auth
+  withCredentials: false,
 });
 
-// ✅ Request Interceptor (contoh: tambahkan token)
 api.interceptors.request.use(
   async (config) => {
-    // Jika kamu punya mekanisme auth token, ambil di sini
-    // const token = getTokenFromCookie() || getTokenFromLocalStorage();
-    // if (token) config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const token = await user.getIdToken(false);
+        if (token) {
+          if (!(config.headers instanceof AxiosHeaders)) {
+            config.headers = new AxiosHeaders(config.headers);
+          }
+          config.headers.set("Authorization", `Bearer ${token}`);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to attach firebase token", err);
+    }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// ✅ Response Interceptor (contoh: logging, refresh token, dsb)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
